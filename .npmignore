@@ -1,0 +1,26 @@
+# Source files (dist is published)
+src/
+tsconfig.json
+
+# Development files
+.github/
+.vscode/
+.idea/
+.editorconfig
+
+# Test files
+tests/
+coverage/
+*.test.ts
+*.spec.ts
+
+# Environment files
+.env*
+.dev.vars*
+*.backup
+
+# Misc
+.DS_Store
+*.log
+*.tgz
+.claude/
