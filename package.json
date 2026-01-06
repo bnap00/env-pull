@@ -1,6 +1,6 @@
 {
   "name": "env-pull",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Pull .env updates from .env.example automatically. Keep your environment files in sync.",
   "type": "module",
   "main": "dist/index.js",

@@ -18,7 +18,7 @@ export interface MergeOptions {
 export function mergeEnvFiles(
   example: ParsedEnvFile,
   target: ParsedEnvFile,
-  diff: EnvDiff,
+  _diff: EnvDiff,
   options: MergeOptions
 ): EnvLine[] {
   const result: EnvLine[] = [];
@@ -26,7 +26,15 @@ export function mergeEnvFiles(
 
   // Walk through example structure
   for (const line of example.lines) {
-    if (line.type === 'comment' || line.type === 'empty') {
+    if (line.type === 'comment') {
+      // Skip any existing "Local variables" headers (from previous syncs)
+      if ((line as { content: string }).content.includes('Local variables (not in example)')) {
+        continue;
+      }
+      result.push(line);
+      continue;
+    }
+    if (line.type === 'empty') {
       result.push(line);
       continue;
     }
@@ -60,13 +68,22 @@ export function mergeEnvFiles(
   );
 
   if (unknownVars.length > 0) {
+    // Remove trailing empty lines before adding local section
+    while (result.length > 0 && result[result.length - 1].type === 'empty') {
+      result.pop();
+    }
     result.push({ type: 'empty' });
     result.push({
       type: 'comment',
       content: '# === Local variables (not in example) ===',
     });
     for (const [, variable] of unknownVars) {
-      result.push(variable);
+      // Clear preceding comments that contain our header (from previous syncs)
+      // to avoid duplicating the "Local variables" header
+      const cleanedComments = variable.precedingComments.filter(
+        (c) => !c.includes('Local variables (not in example)')
+      );
+      result.push({ ...variable, precedingComments: cleanedComments });
     }
   }
 
