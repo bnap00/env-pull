@@ -11,9 +11,10 @@ dist/
 .dev.vars
 *.backup
 
-# IDE
+# IDE / local agent settings
 .idea/
 .vscode/
+.claude/settings.local.json
 *.swp
 *.swo
 

@@ -40,6 +40,24 @@ That's it. env-pull auto-detects your `.env.example` and `.env` files.
 
 ---
 
+## Agent Skill
+
+This repository includes an agent skill at [`skills/env-pull`](./skills/env-pull) for Claude Code, OpenCode, Codex-compatible skill loaders, and skills.sh.
+
+Install it with the skills.sh CLI:
+
+```bash
+npx skills add bnap00/env-pull --skill env-pull
+```
+
+Or from the direct GitHub path:
+
+```bash
+npx skills add https://github.com/bnap00/env-pull/tree/main/skills/env-pull
+```
+
+---
+
 ## Features
 
 | Feature | Description |
