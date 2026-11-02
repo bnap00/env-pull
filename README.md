@@ -218,7 +218,7 @@ Run "env-pull" to sync the files.
 env-pull --dry-run
 ```
 
-Preview what would change without writing to disk.
+Preview what would change without writing to disk. Values are shown as `<redacted>` so the preview is safe to paste or leave in CI logs.
 
 ### With Backup
 
@@ -393,7 +393,23 @@ npm run build  # or: pnpm build / bun run build
 
 # Run locally
 npm run dev    # or: pnpm dev / bun run dev
+
+# Test
+npm test
 ```
+
+This repo uses a [Gitleaks](https://github.com/gitleaks/gitleaks) pre-commit hook to stop secrets from being committed. Install it once with [pre-commit](https://pre-commit.com):
+
+```bash
+pipx install pre-commit   # or: brew install pre-commit
+pre-commit install
+```
+
+---
+
+## Security
+
+Please report vulnerabilities privately; see [SECURITY.md](./SECURITY.md).
 
 ---
 
