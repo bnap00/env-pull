@@ -10,10 +10,8 @@
   },
   "files": [
     "dist",
-    "bin",
-    "skills",
-    "LICENSE",
-    "README.md"
+    "!dist/**/*.map",
+    "bin"
   ],
   "scripts": {
     "build": "tsc",
@@ -23,7 +21,8 @@
     "version-packages": "changeset version",
     "release": "npm run build && changeset publish",
     "prepublishOnly": "npm run build",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "node --test test/*.test.mjs"
   },
   "keywords": [
     "env",

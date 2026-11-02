@@ -4,10 +4,17 @@
 
 import type { EnvLine, EnvVariable } from '../types/env.js';
 
+export interface WriteOptions {
+  /** Replace non-empty values with a placeholder (for previews that may end up in logs) */
+  redactValues?: boolean;
+}
+
+export const REDACTED_VALUE = '<redacted>';
+
 /**
  * Serialize merged env lines back to string content
  */
-export function writeEnvFile(lines: EnvLine[]): string {
+export function writeEnvFile(lines: EnvLine[], options: WriteOptions = {}): string {
   const result: string[] = [];
 
   for (const line of lines) {
@@ -19,7 +26,7 @@ export function writeEnvFile(lines: EnvLine[]): string {
         result.push(line.content);
         break;
       case 'variable':
-        result.push(...formatVariableLine(line));
+        result.push(...formatVariableLine(line, options));
         break;
     }
   }
@@ -30,7 +37,7 @@ export function writeEnvFile(lines: EnvLine[]): string {
 /**
  * Format a variable line including its preceding comments
  */
-function formatVariableLine(variable: EnvVariable): string[] {
+function formatVariableLine(variable: EnvVariable, options: WriteOptions): string[] {
   const lines: string[] = [];
 
   // Add preceding comments
@@ -43,7 +50,8 @@ function formatVariableLine(variable: EnvVariable): string[] {
   if (variable.hasExport) {
     varLine += 'export ';
   }
-  varLine += `${variable.key}=${variable.rawValue}`;
+  const value = options.redactValues && variable.value !== '' ? REDACTED_VALUE : variable.rawValue;
+  varLine += `${variable.key}=${value}`;
   if (variable.inlineComment) {
     varLine += ` ${variable.inlineComment}`;
   }

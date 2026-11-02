@@ -71,6 +71,8 @@ function maskSensitive(key: string, value: string): string {
     /private/i,
   ];
 
+  // Fixed, literal patterns tested against env keys: no catastrophic backtracking
+  // nosemgrep: ajinabraham.njsscan.dos.regex_dos.regex_dos
   const isSensitive = sensitivePatterns.some((pattern) => pattern.test(key));
 
   if (isSensitive && value.length > 0) {
