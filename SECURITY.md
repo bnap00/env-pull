@@ -16,8 +16,15 @@ Include the version, steps to reproduce, and the impact you expect. You should g
 
 ## Release integrity
 
-Releases are published from GitHub Actions using npm trusted publishing with [provenance](https://docs.npmjs.com/generating-provenance-statements). You can check a downloaded package with:
+Releases are published from GitHub Actions using npm trusted publishing with [provenance](https://docs.npmjs.com/generating-provenance-statements). The npm package page shows a "Provenance" section linking each version to the workflow run and commit that built it.
+
+To check a specific version from the command line, install it into an empty project (not this repository's checkout, where the audit would cover env-pull's own dependencies instead) and verify it:
 
 ```bash
+mkdir env-pull-verify && cd env-pull-verify
+npm init -y
+npm install env-pull@<version>
 npm audit signatures
 ```
+
+`npm audit signatures` checks the registry signatures and provenance attestations of everything installed there; the output should report verified attestations. You can also confirm that the version has an attestation with `npm view env-pull@<version> dist.attestations`.

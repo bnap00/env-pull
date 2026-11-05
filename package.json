@@ -22,7 +22,7 @@
     "release": "npm run build && changeset publish",
     "prepublishOnly": "npm run build",
     "typecheck": "tsc --noEmit",
-    "test": "node --test test/*.test.mjs"
+    "test": "npm run build && node --test test/*.test.mjs"
   },
   "keywords": [
     "env",

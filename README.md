@@ -218,7 +218,7 @@ Run "env-pull" to sync the files.
 env-pull --dry-run
 ```
 
-Preview what would change without writing to disk. Values are shown as `<redacted>` so the preview is safe to paste or leave in CI logs.
+Preview what would change without writing to disk. Values are shown as `<redacted>` and comments are left out, so the preview is safe to paste or leave in CI logs.
 
 ### With Backup
 

@@ -46,7 +46,7 @@ test('creates new env files readable by the owner only', { skip: process.platfor
 test('dry run does not print existing secret values', () => {
   withTempDir((dir) => {
     writeFileSync(join(dir, '.env.example'), 'API_KEY=\nDATABASE_URL=\nNEW_VAR=default\n');
-    writeFileSync(join(dir, '.env'), 'API_KEY=sk_live_supersecret\nDATABASE_URL=postgres://u:hunter2@db/app\n');
+    writeFileSync(join(dir, '.env'), 'API_KEY=not-a-real-key-supersecret\nDATABASE_URL=postgres://u:hunter2@db/app\n');
     const output = run(dir, ['-q', '--dry-run']);
     assert.doesNotMatch(output, /supersecret/);
     assert.doesNotMatch(output, /hunter2/);
@@ -63,5 +63,17 @@ test('check exits non-zero when variables are missing', () => {
     assert.throws(() => run(dir, ['check']), (err) => err.status === 1);
     writeFileSync(join(dir, '.env'), 'API_KEY=abc\nPORT=1\n');
     assert.match(run(dir, ['check']), /in sync/);
+  });
+});
+
+test('dry run does not print comments or new example values', () => {
+  withTempDir((dir) => {
+    writeFileSync(join(dir, '.env.example'), 'API_KEY=\nDATABASE_URL=postgres://u:hunter2@db/app\n');
+    writeFileSync(join(dir, '.env'), 'API_KEY=abc\n# OLD_TOKEN=commented-secret\nLOCAL_ONLY=1 # inline-secret\n');
+    const output = run(dir, ['-q', '--dry-run']);
+    assert.doesNotMatch(output, /hunter2/);
+    assert.doesNotMatch(output, /commented-secret/);
+    assert.doesNotMatch(output, /inline-secret/);
+    assert.match(output, /DATABASE_URL=<redacted>/);
   });
 });

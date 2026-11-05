@@ -4,11 +4,17 @@
 
 import chalk from 'chalk';
 import type { EnvDiff } from '../types/env.js';
+import { REDACTED_VALUE } from '../core/writer.js';
+
+export interface DisplayDiffOptions {
+  /** Hide values and comments of new variables (for previews that may end up in logs) */
+  redactValues?: boolean;
+}
 
 /**
  * Display a formatted diff to the console
  */
-export function displayDiff(diff: EnvDiff): void {
+export function displayDiff(diff: EnvDiff, options: DisplayDiffOptions = {}): void {
   console.log(chalk.bold('\n=== Environment File Diff ===\n'));
 
   // Group by diff type
@@ -20,9 +26,12 @@ export function displayDiff(diff: EnvDiff): void {
   if (added.length > 0) {
     console.log(chalk.green.bold('+ New variables (will be added):'));
     for (const v of added) {
-      const defaultValue = v.exampleValue ? maskSensitive(v.key, v.exampleValue) : '<empty>';
+      let defaultValue = '<empty>';
+      if (v.exampleValue) {
+        defaultValue = options.redactValues ? REDACTED_VALUE : maskSensitive(v.key, v.exampleValue);
+      }
       console.log(chalk.green(`  + ${v.key}=${defaultValue}`));
-      if (v.exampleLine?.precedingComments.length) {
+      if (!options.redactValues && v.exampleLine?.precedingComments.length) {
         for (const comment of v.exampleLine.precedingComments) {
           console.log(chalk.gray(`    ${comment}`));
         }

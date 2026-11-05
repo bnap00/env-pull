@@ -5,7 +5,10 @@
 import type { EnvLine, EnvVariable } from '../types/env.js';
 
 export interface WriteOptions {
-  /** Replace non-empty values with a placeholder (for previews that may end up in logs) */
+  /**
+   * Replace non-empty values with a placeholder and drop comments, which can hold
+   * commented-out secrets (for previews that may end up in logs)
+   */
   redactValues?: boolean;
 }
 
@@ -23,7 +26,9 @@ export function writeEnvFile(lines: EnvLine[], options: WriteOptions = {}): stri
         result.push('');
         break;
       case 'comment':
-        result.push(line.content);
+        if (!options.redactValues) {
+          result.push(line.content);
+        }
         break;
       case 'variable':
         result.push(...formatVariableLine(line, options));
@@ -41,8 +46,8 @@ function formatVariableLine(variable: EnvVariable, options: WriteOptions): strin
   const lines: string[] = [];
 
   // Add preceding comments
-  for (const comment of variable.precedingComments) {
-    lines.push(comment);
+  if (!options.redactValues) {
+    lines.push(...variable.precedingComments);
   }
 
   // Build variable line
@@ -52,7 +57,7 @@ function formatVariableLine(variable: EnvVariable, options: WriteOptions): strin
   }
   const value = options.redactValues && variable.value !== '' ? REDACTED_VALUE : variable.rawValue;
   varLine += `${variable.key}=${value}`;
-  if (variable.inlineComment) {
+  if (variable.inlineComment && !options.redactValues) {
     varLine += ` ${variable.inlineComment}`;
   }
   lines.push(varLine);
