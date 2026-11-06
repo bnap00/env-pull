@@ -32,12 +32,14 @@ jobs:
           persist-credentials: false
       # Scan the full history with the Gitleaks CLI. gitleaks-action lists only the first
       # 30 PR commits and scans first-parent history, so it can miss commits in a PR.
-      # Image pinned by digest; bump manually.
+      # --log-opts mirrors Gitleaks' defaults plus -m, so merge commits (e.g. conflict
+      # resolutions) are scanned too. Image pinned by digest; bump manually.
       - name: Gitleaks
         run: >-
           docker run --rm -v "$PWD:/repo"
           zricethezav/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f
           git /repo --redact --no-banner --verbose
+          --log-opts="--full-history --all --diff-filter=tuxdb -m"
 
   codeql:
     runs-on: ubuntu-latest

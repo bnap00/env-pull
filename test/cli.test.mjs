@@ -69,11 +69,15 @@ test('check exits non-zero when variables are missing', () => {
 test('dry run does not print comments or new example values', () => {
   withTempDir((dir) => {
     writeFileSync(join(dir, '.env.example'), 'API_KEY=\nDATABASE_URL=postgres://u:hunter2@db/app\n');
-    writeFileSync(join(dir, '.env'), 'API_KEY=abc\n# OLD_TOKEN=commented-secret\nLOCAL_ONLY=1 # inline-secret\n');
+    writeFileSync(
+      join(dir, '.env'),
+      'API_KEY=abc\n# OLD_TOKEN=commented-secret\nLOCAL_ONLY=1 # inline-secret\nEMPTY_LOCAL="" # empty-inline-secret\n'
+    );
     const output = run(dir, ['-q', '--dry-run']);
     assert.doesNotMatch(output, /hunter2/);
     assert.doesNotMatch(output, /commented-secret/);
     assert.doesNotMatch(output, /inline-secret/);
+    assert.doesNotMatch(output, /empty-inline-secret/);
     assert.match(output, /DATABASE_URL=<redacted>/);
   });
 });

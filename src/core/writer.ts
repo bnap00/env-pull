@@ -55,7 +55,11 @@ function formatVariableLine(variable: EnvVariable, options: WriteOptions): strin
   if (variable.hasExport) {
     varLine += 'export ';
   }
-  const value = options.redactValues && variable.value !== '' ? REDACTED_VALUE : variable.rawValue;
+  // rawValue can carry an inline comment (e.g. `KEY="" # note`), so don't use it when redacting
+  let value = variable.rawValue;
+  if (options.redactValues) {
+    value = variable.value !== '' ? REDACTED_VALUE : '';
+  }
   varLine += `${variable.key}=${value}`;
   if (variable.inlineComment && !options.redactValues) {
     varLine += ` ${variable.inlineComment}`;
