@@ -1,0 +1,2 @@
+# Fake fixture value in an earlier commit of test/cli.test.mjs (matched the Stripe key rule)
+c78c9d81df1f9e8a7733a2152c6c122f1071cbf2:test/cli.test.mjs:stripe-access-token:49

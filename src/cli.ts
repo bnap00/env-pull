@@ -128,7 +128,8 @@ function safeReadFile(filePath: string, fileName: string): string {
  */
 function safeWriteFile(filePath: string, content: string, fileName: string): void {
   try {
-    writeFileSync(filePath, content);
+    // Env files hold secrets: create new files owner-only (mode only applies on creation)
+    writeFileSync(filePath, content, { mode: 0o600 });
   } catch (error) {
     if (error instanceof Error && 'code' in error) {
       const code = (error as NodeJS.ErrnoException).code;
@@ -295,8 +296,8 @@ async function runSync(config: Partial<SyncConfig>): Promise<void> {
     const output = writeEnvFile(merged);
 
     if (config.dryRun) {
-      console.log(chalk.yellow('\n[Dry run] Would create file with content:\n'));
-      console.log(output);
+      console.log(chalk.yellow('\n[Dry run] Would create file with content (values and comments redacted):\n'));
+      console.log(writeEnvFile(merged, { redactValues: true }));
     } else {
       safeWriteFile(targetPath, output + '\n', targetFile);
       console.log(chalk.green(`\nCreated ${targetFile}`));
@@ -318,7 +319,7 @@ async function runSync(config: Partial<SyncConfig>): Promise<void> {
   }
 
   // Display diff
-  displayDiff(diff);
+  displayDiff(diff, { redactValues: config.dryRun });
 
   // Get values for new variables
   const addedVariables = diff.variableDiffs.filter((v) => v.diffType === 'added');
@@ -349,8 +350,8 @@ async function runSync(config: Partial<SyncConfig>): Promise<void> {
   const output = writeEnvFile(merged);
 
   if (config.dryRun) {
-    console.log(chalk.yellow('\n[Dry run] Would write:\n'));
-    console.log(output);
+    console.log(chalk.yellow('\n[Dry run] Would write (values and comments redacted):\n'));
+    console.log(writeEnvFile(merged, { redactValues: true }));
   } else {
     // Create backup if requested
     if (config.backup) {
